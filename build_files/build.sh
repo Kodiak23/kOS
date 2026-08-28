@@ -12,8 +12,26 @@ cp -avf "/ctx/system_files"/. /
 # List of rpmfusion packages can be found here:
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
-# this installs a package from fedora repos
-dnf5 install -y tmux
+# install packages for homebrew
+dnf group -y install development-tools
+dnf -y install procps-ng curl file
+
+# install packages
+dnf -y install \
+  bootc \
+  docker-buildx \
+  docker-compose \
+  podman \
+  podman-compose \
+  qemu-guest-agent \
+  tmux \
+  man-db \
+  pciutils \
+  ufw
+# firewalld
+# fwupd-efi
+# open-vm-tools
+# pv
 
 # Use a COPR Example:
 #
@@ -24,4 +42,4 @@ dnf5 install -y tmux
 
 #### Example for enabling a System Unit File
 
-systemctl enable podman.socket
+# systemctl enable podman.socket
