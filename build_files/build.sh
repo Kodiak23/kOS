@@ -7,7 +7,6 @@ cp -avf "/ctx/system_files"/. /
 
 # Install development-tools for homebrew
 dnf group -y install development-tools
-dnf -y install procps-ng
 
 # Install packages
 dnf -y install \
@@ -19,14 +18,10 @@ dnf -y install \
   podman-compose \
   procps-ng \
   qemu-guest-agent \
-  stow \
   uutils-coreutils \
   wget \
   ufw
-# btop
-# zoxide
-# pciutils # Don't really need this on the base vm image without pci-passthrough devices
-# fwupd-efi # Don't really need this on the base vm image
+# pciutils # Don't need this on the base vm image until an image needs pci-passthrough devices
 
 # Enable COPR for package install then disable immediately so they don't end up enabled on the final image:
 # dnf5 -y copr enable ublue-os/staging
