@@ -1,0 +1,48 @@
+variant: fcos
+version: 1.7.0
+
+# Set users and groups
+passwd:
+  users:
+    # Core is the default admin account with passwordless sudo access, therefore it should have highly restricted access and only be used to administer the system.
+    - name: core
+      ssh_authorized_keys:
+        - insert_admin_ssh_key_here
+
+      # Core defaults to UID 1000, but we want that for our login user, so it's to 500 here.
+      uid: 500
+      primary_group: core
+      groups:
+        - name: core
+          gid: 500
+
+    # Create a login user to interact with the system and run docker commands. 
+    - name: insert_user_name_here
+      ssh_authorized_keys:
+        - insert_user_ssh_key_here
+      groups:
+        - docker
+
+# Set storage configuration
+storage:
+  # This will setup /var on a separate disk, separating the immutable and writable parts of the file system for easy user data transfer and recovery
+  disks:
+    - device: /dev/sdb
+      wipe_table: true
+      partitions:
+        - number: 1
+          label: var
+  filesystems:
+    - path: /var
+      device: /dev/disk/by-partlabel/var
+      format: xfs
+      wipe_filesystem: true
+      label: var
+      with_mount_unit: true
+
+  # Set the system's hostname
+  files:
+    - path: /etc/hostname
+      contents:
+        inline: insert_hostname_here
+
