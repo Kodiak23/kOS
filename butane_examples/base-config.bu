@@ -28,4 +28,27 @@ storage:
     - path: /etc/hostname
       contents:
         inline: insert_hostname_here
+  directories:
+    - path: /etc/kos-image
+      mode: 0754
 
+# Switch Fedora CoreOS image to kOS using bootc switch on first boot
+systemd:
+  units:
+    - name: kos-image.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Switch to kOS image and reboot
+        ConditionPathExists=!/etc/kos-image/complete
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        Type=oneshot
+        StandardOutput=journal+console
+        ExecStart=/usr/bin/bootc switch ghcr.io/kodiak23/kos
+        ExecStart=/usr/bin/touch /etc/kos-image/complete
+        ExecStart=/usr/bin/systemctl disable kos-image.service
+        ExecStart=/usr/bin/systemctl reboot
+        [Install]
+        WantedBy=multi-user.target
