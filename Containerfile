@@ -4,7 +4,7 @@ COPY build_files /
 COPY system_files /system_files
 
 # Base Image
-FROM quay.io.fedora/fedora-coreos:stable
+FROM quay.io/fedora/fedora-coreos:stable
 # FROM ghcr.io/ublue-os/ucore-hci:stable
 
 ### MODIFICATIONS
