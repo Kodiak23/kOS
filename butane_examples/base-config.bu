@@ -1,0 +1,54 @@
+variant: fcos
+version: 1.7.0
+
+# Set users and groups
+passwd:
+  users:
+    # Core is the default admin account with passwordless sudo access, therefore it should have highly restricted access and only be used to administer the system.
+    - name: core
+      ssh_authorized_keys:
+        - insert_admin_ssh_key_here
+      # Core defaults to UID 1000, but we want that for our login user, so it's to 500 here.
+      uid: 500
+      primary_group: core
+      groups:
+        - name: core
+          gid: 500
+    # Create a login user to interact with the system and run docker commands. 
+    - name: insert_user_name_here
+      ssh_authorized_keys:
+        - insert_user_ssh_key_here
+      groups:
+        - docker
+
+# Set storage configuration
+storage:
+  # Set the system's hostname
+  files:
+    - path: /etc/hostname
+      contents:
+        inline: insert_hostname_here
+  directories:
+    - path: /etc/kos-image
+      mode: 0754
+
+# Switch Fedora CoreOS image to kOS using bootc switch on first boot
+systemd:
+  units:
+    - name: kos-image.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Switch to kOS image and reboot
+        ConditionPathExists=!/etc/kos-image/complete
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        Type=oneshot
+        StandardOutput=journal+console
+        ExecStart=/usr/bin/bootc switch ghcr.io/kodiak23/kos
+        ExecStart=/usr/bin/touch /etc/kos-image/complete
+        ExecStart=/usr/bin/systemctl disable kos-image.service
+        ExecStart=/usr/bin/systemctl reboot
+        [Install]
+        WantedBy=multi-user.target
