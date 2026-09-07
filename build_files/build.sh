@@ -15,7 +15,6 @@ dnf -y install \
   man-db \
   podman-compose \
   qemu-guest-agent \
-  uutils-coreutils \
   wget
 
 # ceph-common # about 220MB to install, and I don't need this on every server? maybe. I might make a different image tag for it. Undecided
