@@ -7,11 +7,8 @@ cp -avf "/ctx/system_files"/. /
 
 # Install packages
 dnf -y install \
-  docker-buildx \
-  docker-compose \
   firewalld \
   fish \
-  git-lfs \
   man-db \
   podman-compose \
   qemu-guest-agent \
