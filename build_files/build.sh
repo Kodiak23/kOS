@@ -8,7 +8,6 @@ cp -avf "/ctx/system_files"/. /
 # Install packages
 dnf -y install \
   man-db \
-  podman-compose \
   qemu-guest-agent \
   wget
 
