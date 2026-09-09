@@ -7,7 +7,6 @@ cp -avf "/ctx/system_files"/. /
 
 # Install packages
 dnf -y install \
-  firewalld \
   man-db \
   podman-compose \
   qemu-guest-agent \
