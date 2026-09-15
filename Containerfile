@@ -1,15 +1,15 @@
-# Allow build scripts to be referenced without being copied into the final image
+## Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
 
-# Base Image
+## Base Image
 FROM quay.io/fedora/fedora-coreos:stable
 # FROM ghcr.io/ublue-os/ucore-hci:stable
 
 ### MODIFICATIONS
 
-# Copy Homebrew files from the brew image and enable
+## Copy Homebrew files from the brew image and enable
 COPY --from=ghcr.io/ublue-os/brew:latest /system_files /
 RUN --mount=type=cache,dst=/var/cache \
   --mount=type=cache,dst=/var/log \
