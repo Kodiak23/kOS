@@ -5,23 +5,19 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
 
-# Install packages
-dnf -y install \
-  man-db \
-  qemu-guest-agent \
-  wget
-
-# ceph-common # about 220MB to install, and I don't need this on every server? maybe. I might make a different image tag for it. Undecided
-# pciutils # Don't need this on the base vm image until an image needs pci-passthrough devices
-
-# Development-tools for homebrew, but the group of packages is large, going to see if I can do without first
-# dnf group -y install development-tools
-# dnf -y install procps-ng
-
-# Enable COPR for package install then disable immediately so they don't end up enabled on the final image:
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# dnf5 -y copr disable ublue-os/staging
+case "$TAG" in
+base | latest)
+  exit 0
+  ;;
+vm)
+  /ctx/common-packages.sh
+  /ctx/vm-packages.sh
+  ;;
+server)
+  /ctx/common-packages.sh
+  /ctx/server-packages.sh
+  ;;
+esac
 
 # Enable/Disable system unit files
 # systemctl enable podman.socket
