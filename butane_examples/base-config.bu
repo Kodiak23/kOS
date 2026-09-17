@@ -1,20 +1,21 @@
 variant: fcos
-version: 1.7.0
+version: 1.8.0
 
 # Set users and groups
 passwd:
   users:
-    # Core is the default admin account with passwordless sudo access, therefore it should have highly restricted access and only be used to administer the system.
+    # Core is the default admin account with passwordless sudo access
+    # It should have highly restricted access and only be used to administer the system
     - name: core
       ssh_authorized_keys:
         - insert_admin_ssh_key_here
-      # Core defaults to UID 1000, but we want that for our login user, so it's to 500 here.
+      # Core defaults to UID 1000, but we want that for our login user, so it's set to 500 here
       uid: 500
       primary_group: core
       groups:
         - name: core
           gid: 500
-    # Create a login user to interact with the system and run docker commands. 
+    # Create a login user to interact with the system and run docker commands
     - name: insert_user_name_here
       ssh_authorized_keys:
         - insert_user_ssh_key_here
@@ -32,23 +33,22 @@ storage:
     - path: /etc/kos-image
       mode: 0754
 
-# Switch Fedora CoreOS image to kOS using bootc switch on first boot
+# Switch Fedora CoreOS image to brewcore using bootc switch on first boot
 systemd:
   units:
-    - name: kos-image.service
+    - name: brewcore.service
       enabled: true
       contents: |
         [Unit]
-        Description=Switch to kOS image and reboot
-        ConditionPathExists=!/etc/kos-image/complete
+        Description=Switch to brewcore image and reboot
+        ConditionPathExists=!/etc/brewcore
         After=network-online.target
         Wants=network-online.target
         [Service]
         Type=oneshot
         StandardOutput=journal+console
-        ExecStart=/usr/bin/bootc switch ghcr.io/kodiak23/kos
-        ExecStart=/usr/bin/touch /etc/kos-image/complete
-        ExecStart=/usr/bin/systemctl disable kos-image.service
+        ExecStart=/usr/bin/bootc switch ghcr.io/kodiak23/brewcore
+        ExecStart=/usr/bin/systemctl disable brewcore.service
         ExecStart=/usr/bin/systemctl reboot
         [Install]
         WantedBy=multi-user.target
