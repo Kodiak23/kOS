@@ -2,6 +2,6 @@
 
 set -ouex pipefail
 
-# server packages
+# install server packages
 dnf -y install \
-	pciutuils
+  pciutuils

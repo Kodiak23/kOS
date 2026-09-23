@@ -2,11 +2,8 @@
 
 set -ouex pipefail
 
-# common packages
+# install common packages
 dnf -y install \
-	gum \
-	man-db \
-	wget
+  man-db
 
-# gum will be used for scripting
-# man-db and wget are base packages I think should have been included in FCOS
+# man-db is a base package I think should have been included in FCOS
