@@ -7,6 +7,7 @@ COPY system_files /system_files
 FROM quay.io/fedora/fedora-coreos:stable
 # FROM ghcr.io/ublue-os/ucore-hci:stable
 
+ARG IMAGE=""
 ARG TAG=""
 
 ### MODIFICATIONS

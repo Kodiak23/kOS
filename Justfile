@@ -1,14 +1,5 @@
-# set dotenv-filename := "image-template.env"
-
-
-# export image_name := env_var("IMAGE_NAME")
-# export repo_organization := env_var("REPO_ORGANIZATION")
-# export image_desc := env_var("IMAGE_DESC")
-# export image_keywords := env_var("IMAGE_KEYWORDS")
-# export image_logo_url := env_var("IMAGE_LOGO_URL")
-# export default_tag := env_var("DEFAULT_TAG")
-# export bib_image := env_var("BIB_IMAGE")
-
+export image_name := "brewcore"
+export default_tag := "latest"
 export repo_organization := "kodiak23"
 export image_desc := "Customized Fedora CoreOS images with Homebrew, built using Universal Blue's image template"
 export image_keywords := "bootc,oci,linux,fedora,coreos,universalblue,homebrew,vm,server"
@@ -34,21 +25,23 @@ default:
 
 # Build the image using the specified parameters
 [group('Build Container')]
-build:
+build $target_image=image_name $tag=default_tag:
     #!/usr/bin/env bash
     set -euox pipefail
  
-    IMAGE_CHOICES=(
-    "brewcore base"
-    "brewcore vm"
-    "brewcore server"
-    "fedora-coreos stable"
-    )
-
-    CHOICE=$(gum choose --limit 1 --header "Choose an image to build" ${IMAGE_CHOICES})
-
-    target_image=$(echo ${CHOICE} | cut -d ' ' -f 1) 
-    tag=$(echo ${CHOICE} | cut -d ' ' -f 2) 
+    # If running locally, ask user for image choice
+    # if [[ $- == *i* ]]; then
+    #   IMAGE_CHOICES=(
+    #   "brewcore base"
+    #   "brewcore vm (aka latest)"
+    #   "brewcore server"
+    #   "fedora-coreos stable"
+    #   )
+    #
+    #   CHOICE=$(gum choose --limit 1 --header "Choose an image to build" ${IMAGE_CHOICES})
+    #   target_image=$(echo ${CHOICE} | cut -d ' ' -f 1) 
+    #   tag=$(echo ${CHOICE} | cut -d ' ' -f 2) 
+    # fi
 
     BUILD_ARGS=()
     BUILD_ARGS+=("--build-arg" "IMAGE=${target_image}")
