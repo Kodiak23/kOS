@@ -1,0 +1,87 @@
+variant: fcos
+version: 1.8.0
+
+# Set users and groups
+passwd:
+  users:
+    # Core is the default admin account with passwordless sudo access
+    # It should have highly restricted access and only be used to administer the system
+    - name: core
+      ssh_authorized_keys:
+        - insert_admin_ssh_key_here
+      # Core defaults to UID 1000, but we want that for our login user, so it's set to 500 here
+      uid: 500
+      primary_group: core
+      groups:
+        - name: core
+          gid: 500
+    # Create a login user to interact with the system and run docker/podman commands
+    - name: kodiak23
+      ssh_authorized_keys:
+        - insert_user_ssh_key_here
+      groups:
+        - docker
+
+storage:
+  # Set the system's hostname
+  files:
+    - path: /etc/hostname
+      contents:
+        inline: insert_hostname_here
+
+systemd:
+  units:
+    # Switch Fedora CoreOS image to brewcore using bootc switch on first boot
+    - name: brewcore.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Switch to brewcore image and reboot
+        ConditionFirstBoot=yes
+        After=network-online.target
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/bootc switch ghcr.io/kodiak23/brewcore
+        ExecStart=/usr/bin/systemctl reboot
+        [Install]
+        WantedBy=multi-user.target
+    - name: cli-essentials.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install cli-essentials from brewfile
+        ConditionPathExists=/etc/brewcore/brew_files/cli-essentials.brewfile
+        After=network-online.target
+        [Service]
+        Type=oneshot
+        ExecStart=/home/linuxbrew/.linuxbrew/bin/brew bundle install --file /etc/brewcore/brew_files/cli-essentials.brewfile
+        ExecStart=/usr/bin/systemctl disable cli-essentials.service
+        [Install]
+        WantedBy=multi-user.target
+    - name: vm-setup.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Link vm-setup script to user's home directory
+        ConditionPathExists=/etc/brewcore/vm-setup.sh
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/chmod +x /etc/brewcore/vm-setup.sh
+        ExecStart=/usr/bin/ln -s /etc/brewcore/vm-setup.sh /home/kodiak23
+        ExecStart=/usr/bin/systemctl disable vm-setup.service
+        [Install]
+        WantedBy=multi-user.target
+    - name: server-setup.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Link server-setup script to user's home directory
+        ConditionPathExists=/etc/brewcore/server-setup.sh
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/chmod +x /etc/brewcore/server-setup.sh
+        ExecStart=/usr/bin/ln -s /etc/brewcore/server-setup.sh /home/kodiak23
+        ExecStart=/usr/bin/systemctl disable server-setup.service
+        [Install]
+        WantedBy=multi-user.target
+
